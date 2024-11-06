@@ -1,42 +1,47 @@
 package com.employee.employeedemo.service;
 
-import com.employee.employeedemo.dao.EmployeeDao;
+import com.employee.employeedemo.dao.EmployeeRepository;
 import com.employee.employeedemo.entity.Employee;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService{
 
-    private final EmployeeDao employeeDao;
+    private final EmployeeRepository employeeRepository;
 
     @Autowired
-    public EmployeeServiceImpl(EmployeeDao employeeDao) {
-        this.employeeDao = employeeDao;
+    public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
+        this.employeeRepository = employeeRepository;
     }
 
     @Override
     public List<Employee> findAll() {
-        return employeeDao.findAll();
+        return employeeRepository.findAll();
     }
 
     @Override
-    @Transactional
     public Employee save(Employee employee) {
-        return employeeDao.save(employee);
+        return employeeRepository.save(employee);
     }
 
     @Override
-    @Transactional
     public void deleteById(int id) {
-        employeeDao.deleteById(id);
+        employeeRepository.deleteById(id);
     }
 
     @Override
     public Employee findById(int id) {
-        return employeeDao.findById(id);
+        Optional<Employee> result = employeeRepository.findById(id);
+        Employee theEmployee = null;
+        if(result.isPresent())
+            theEmployee = result.get();
+        else
+            throw new RuntimeException("Employee not found - " + id);
+        return theEmployee;
     }
 }
